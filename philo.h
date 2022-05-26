@@ -14,6 +14,7 @@ typedef struct s_args
 	int	time_to_eat;
 	int	time_to_sleep;
 	int	must_eat;
+	long long starting_point;
 }	t_args;
 
 typedef struct s_philo
