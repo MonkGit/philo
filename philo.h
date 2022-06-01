@@ -13,14 +13,25 @@ typedef struct s_args
 	int	time_to_die;
 	int	time_to_eat;
 	int	time_to_sleep;
-	int	must_eat;
-	long long starting_point;
+	int	number_of_meals;
+	// long long starting_point;
+	struct timeval *start;
+	pthread_mutex_t forks[200];
+	t_philo			philo[200];
+	pthread_mutex_t	breaker;
+	pthread_mutex_t	print_lock;
 }	t_args;
 
 typedef struct s_philo
 {
 	int id;
+	int	left_fork;
+	int	right_fork;
+	// int				flag_fork;
+	// int				count_eat;
+	// struct timeval last_meal;
 	t_args *args;
+	pthread_t	thread_id;
 }	t_philo;
 
 #endif
