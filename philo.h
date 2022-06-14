@@ -19,7 +19,8 @@ struct s_philo
 	int					count_meals;
 	unsigned long long	last_meal;
 	pthread_t			t_id;
-	// t_args 				*args;
+	t_args 				*args;
+	t_mutex				*forks;
 	// int				flag_fork;
 };
 

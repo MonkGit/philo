@@ -54,30 +54,55 @@ int	fill_args(t_args *args, char **argv)
 	return (0);
 }
 
-int	init_philo(t_args *args)
+t_philo	*init_philo(t_args *args)
 {
 	int i;
+	t_philo *philo;
 
 	i = -1;
-	args->philo = malloc(sizeof(t_philo) * args->all);
-	if (!args->philo)
+	if (!(philo = malloc(sizeof(t_philo) * args->all)))
 		return (return_error("Malloc problems\n"));
 	args->start = get_time_now();
 	while (++i < args->all)
 	{
-		args->philo[i].name = i + 1;
-		args->philo[i].count_meals = 0;
-		args->philo[i].last_meal = args->start;
-		args->philo[i].right = i;
+		philo[i].name = i + 1;
+		philo[i].count_meals = 0;
+		philo[i].last_meal = args->start;
+		philo[i].right = i;
 		if (args->all == 1)
 		{
-			args->philo[i].left = 0;
+			philo[i].left = 0;
 			return (0);
 		}
-		if (args->philo[i].name == args->all)
-			args->philo[i].right = 0;
-		args->philo[i].left = i + 1;
-	//pthread_mutex_init(&p[i].eating, 0);
+		if (philo[i].name == args->all)
+			philo[i].right = 0;
+		philo[i].left = i + 1;
+		philo[i].args = args;
+		philo[i].forks = args->forks;
+	}
+	return (philo);
+}
+
+void *simulation(void *data)
+{
+	t_philo *philo;
+
+	philo = (t_philo *)data;
+	if (philo->name % 2 == 0)
+		usleep(100);
+}
+
+int	create_threads(t_args *args, t_philo *philo)
+{
+	int i;
+
+	i = -1;
+	while (++i < args->all)
+	{
+		if (pthread_create(&philo[i].t_id, NULL, simulation, &philo[i]) != 0)
+			return (return_error("Error occured while creating threads\n"));
+		if (pthread_detach(philo[i].t_id) != 0)
+			return (return_error("The thread has not terminated\n"));
 	}
 	return (0);
 }
@@ -85,15 +110,20 @@ int	init_philo(t_args *args)
 int	main(int argc, char **argv)
 {
 	t_args args;
-	// if (argc < 5 || argc > 6)
-	// 	return(return_error("Wrong number of arguments!"));
+	t_philo *philo;
+	if (argc < 5 || argc > 6)
+		return(return_error("Wrong number of arguments!"));
 	if (fill_args(&args, argv))
 		return (1);
-	init_philo(&args);
-
-	printf("%llu\n", args.start);
-	int i = -1;
+	philo = init_philo(&args);
+	//if (!philo)
+	create_threads(&args, philo);
+	
+	
+	
+	// int i = -1;
 	// while (++i < args.all)
+	// 	printf("%d\n", philo[i].args->all);
 	// 	printf("NAME %d,left fork %d, right fork %d ATE %d times, LAST MEAL %llu\n",args.philo[i].name, args.philo[i].left, args.philo[i].right, args.philo[i].count_meals, args.philo[i].last_meal);
 	
 	return (0);
