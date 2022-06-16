@@ -83,13 +83,29 @@ t_philo	*init_philo(t_args *args)
 	return (philo);
 }
 
-void *simulation(void *data)
+void process(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->forks[philo->right]);
+	print_msg(philo->args, philo, "has taken a fork");
+	pthread_mutex_lock(&philo->forks[philo->left]);
+	print_msg(philo->args, philo, "has taken a fork");
+	print_msg(philo->args, philo, "is eating");
+	isleep(philo->args->tt_eat / 1000);
+	pthread_mutex_unlock(&philo->forks[philo->left]);
+	pthread_mutex_unlock(&philo->forks[philo->right]);
+}
+
+void *emulator(void *data)
 {
 	t_philo *philo;
 
 	philo = (t_philo *)data;
 	if (philo->name % 2 == 0)
 		usleep(100);
+	while (1)
+	{
+		process(philo);
+	}
 }
 
 int	create_threads(t_args *args, t_philo *philo)
@@ -99,7 +115,7 @@ int	create_threads(t_args *args, t_philo *philo)
 	i = -1;
 	while (++i < args->all)
 	{
-		if (pthread_create(&philo[i].t_id, NULL, simulation, &philo[i]) != 0)
+		if (pthread_create(&philo[i].t_id, NULL, emulator, &philo[i]) != 0)
 			return (return_error("Error occured while creating threads\n"));
 		if (pthread_detach(philo[i].t_id) != 0)
 			return (return_error("The thread has not terminated\n"));
@@ -118,6 +134,7 @@ int	main(int argc, char **argv)
 	philo = init_philo(&args);
 	//if (!philo)
 	create_threads(&args, philo);
+	usleep(90000000);
 	
 	
 	

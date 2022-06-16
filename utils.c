@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_atoi.c                                          :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: slaree <slaree@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/01 17:42:02 by slaree            #+#    #+#             */
-/*   Updated: 2022/06/13 16:07:18 by slaree           ###   ########.fr       */
+/*   Updated: 2022/06/16 18:56:32 by slaree           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,4 +42,16 @@ int	ft_atoi(const char *str)
 			return ((sign == 1) * -1);
 	}
 	return (nb * sign);
+}
+
+void	print_msg(t_args *args, t_philo *philo, char *msg)
+{
+	int name;
+	unsigned long long s_time;
+
+	name = philo->name;
+	s_time = args->start;
+	pthread_mutex_lock(&args->print_lock);
+	printf("%llu %d %s\n", get_time_now() - s_time, name, msg);
+	pthread_mutex_unlock(&args->print_lock);	
 }

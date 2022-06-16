@@ -9,7 +9,7 @@ unsigned long long get_time_now(void)
     return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-void isleep(t_args *args, unsigned long long ms)
+void isleep(unsigned long long ms)
 {
     unsigned long long time_now;
 
