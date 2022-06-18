@@ -35,6 +35,7 @@ struct s_args
 	unsigned long long	start;
 	t_mutex				*forks;
 	t_mutex				print_lock;
+	t_mutex				mutex;
 	t_philo				*philo;
 };
 

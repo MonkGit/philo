@@ -15,14 +15,16 @@ int	init_mutex(t_args *args)
 {
 	int i;
 
-	i = 0;
+	i = -1;
 	while(++i < args->all)
 	{
 		if(pthread_mutex_init(&args->forks[i], NULL) != 0)
-			return(return_error("Mutex error\n"));
+			return(err_msg("Mutex error\n"));
 	}
 	if (pthread_mutex_init(&args->print_lock, NULL) != 0)
-		return(return_error("Mutex error\n"));
+		return(err_msg("Mutex error\n"));
+	if (pthread_mutex_init(&args->mutex, NULL) != 0)
+		return(err_msg("Mutex error\n"));
 	return (0);
 }
 
@@ -39,13 +41,13 @@ int	fill_args(t_args *args, char **argv)
 	{
 		args->meals = ft_atoi(argv[5]);
 		if (args->meals < 1)
-			return(return_error("Parameters are out of range\n"));
+			return(err_msg("Parameters are out of range\n"));
 	}
 	else
 		args->meals = -1;
 	if (args->all > 200 || args-> tt_die < 1
 		 || args ->tt_eat < 1 || args->tt_sleep < 1)
-		 return(return_error("Parameters are out of range\n"));
+		 return(err_msg("Parameters are out of range\n"));
 	args->forks = malloc(sizeof(t_mutex) * args->all);
 	if (!args->forks)
 		return (1);
@@ -61,7 +63,7 @@ t_philo	*init_philo(t_args *args)
 
 	i = -1;
 	if (!(philo = malloc(sizeof(t_philo) * args->all)))
-		return (return_error("Malloc problems\n"));
+		return (err_msg("Malloc problems\n"));
 	args->start = get_time_now();
 	while (++i < args->all)
 	{
@@ -85,14 +87,25 @@ t_philo	*init_philo(t_args *args)
 
 void process(t_philo *philo)
 {
+	// printf("aaa%llu\n", get_time_now());
+	// printf("qqq%i\n", philo->right);
+	// printf("qqsssq%i\n", philo->left);
 	pthread_mutex_lock(&philo->forks[philo->right]);
+	// printf("bbb%llu\n", get_time_now());
 	print_msg(philo->args, philo, "has taken a fork");
 	pthread_mutex_lock(&philo->forks[philo->left]);
 	print_msg(philo->args, philo, "has taken a fork");
 	print_msg(philo->args, philo, "is eating");
 	isleep(philo->args->tt_eat / 1000);
+	pthread_mutex_lock(&philo->args->mutex);
+	philo->last_meal = get_time_now();
+	pthread_mutex_unlock(&philo->args->mutex);
 	pthread_mutex_unlock(&philo->forks[philo->left]);
 	pthread_mutex_unlock(&philo->forks[philo->right]);
+	// pthread_mutex_unlock(&philo->forks[philo->left]);
+	print_msg(philo->args, philo, "is sleeping");
+	isleep(philo->args->tt_sleep / 1000);
+	print_msg(philo->args, philo, "is thinking");
 }
 
 void *emulator(void *data)
@@ -116,26 +129,29 @@ int	create_threads(t_args *args, t_philo *philo)
 	while (++i < args->all)
 	{
 		if (pthread_create(&philo[i].t_id, NULL, emulator, &philo[i]) != 0)
-			return (return_error("Error occured while creating threads\n"));
+			return (err_msg("Error occured while creating threads\n"));
 		if (pthread_detach(philo[i].t_id) != 0)
-			return (return_error("The thread has not terminated\n"));
+			return (err_msg("The thread has not terminated\n"));
 	}
 	return (0);
 }
 
 int	main(int argc, char **argv)
 {
-	t_args args;
+	t_args *args;
 	t_philo *philo;
 	if (argc < 5 || argc > 6)
-		return(return_error("Wrong number of arguments!"));
-	if (fill_args(&args, argv))
+		return(err_msg("Wrong number of arguments!"));
+	if (!(args = malloc(sizeof(t_args))))
+		return (err_msg("Malloc error"));
+	if (fill_args(args, argv))
 		return (1);
-	philo = init_philo(&args);
-	//if (!philo)
-	create_threads(&args, philo);
-	usleep(90000000);
-	
+	philo = init_philo(args);
+	if (!philo)
+		err_msg("Couldn't create philosophers");
+	args->start = get_time_now();
+	create_threads(args, philo);
+	checker(args, philo);
 	
 	
 	// int i = -1;
