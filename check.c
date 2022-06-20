@@ -29,27 +29,43 @@ int check_args(t_args *args, char **argv)
 int checker(t_args *args, t_philo *philo)
 {
 	int	i;
-	// usleep(2000000);
+	int n;
+	int flag = -1;
 	while (1)
 	{
 		i = -1;
 		while (++i < args->all)
 		{
+			// pthread_mutex_lock(&philo[i].args->print_lock);
+			// printf("yime_now %lld\n",get_time_now());
+			// printf("time passed %lld\n",get_time_now() - args->start);
+			// pthread_mutex_unlock(&philo[i].args->print_lock);
 			pthread_mutex_lock(&philo->args->mutex);
-			if (((get_time_now() - philo[i].last_meal)) * 1000 > args->tt_die)
+			if ((get_time_now() - philo[i].last_meal) * 1000 > args->tt_die)
 			{
 				// printf("time now %llu\n", get_time_now());
 				// printf("time passed %llu\n", (get_time_now() - philo[i].last_meal) * 1000);
 				// printf("ttdie %d\n",args->tt_die);
-				// printf("a%d\n",philo[i].last_meal);
+				// printf("a%lld\n",philo[i].last_meal);
 				pthread_mutex_unlock(&philo->args->mutex);
 				pthread_mutex_lock(&args->print_lock);
 				// printf("time nowfgdfg %llu\n", args->start);
 				printf("%llu %d %s\n", get_time_now() - args->start, philo[i].name, "has died :'((");
 				return (1);
 			}
-			if (args->meals == 0)
+			pthread_mutex_lock(&philo->args->meal_checker);
+			n = -1;
+			while(++n < args->all)
 			{
+				if (philo->meal_n == 0)
+					flag = 1;
+				else
+					flag = -1;
+			}
+			pthread_mutex_unlock(&philo->args->meal_checker);
+			if (flag == 1)
+			{
+				pthread_mutex_lock(&args->print_lock);
 				pthread_mutex_unlock(&philo->args->mutex);
 				return (1);
 			}
@@ -58,28 +74,3 @@ int checker(t_args *args, t_philo *philo)
 	}
 	return (0);
 }
-
-// void test_print(t_philo *philo)
-// {
-// 	pthread_mutex_lock(&philo->args->print_lock);
-// 	printf("%d %llu\n", philo->name, philo->last_meal);
-// 	printf("%llu\n", philo->args->tt_die);
-// 	pthread_mutex_unlock(&philo->args->print_lock);
-// }
-
-
-// int checker(t_args *args, t_philo *philo)
-// {
-// 	int	i;
-
-// 	i = -1;
-// 	while (++i < args->all)
-// 	{
-// 		pthread_mutex_lock(&args->checker);
-// 		if (is_dead(args, &philo[i]))
-// 			return (1);
-// 		if (args->meals == 0)
-// 			return (1);
-// 		pthread_mutex_unlock(&args->checker);
-// 	}
-// }
