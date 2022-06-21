@@ -136,11 +136,7 @@ t_philo	*init_philo(t_args *args)
 
 void process(t_philo *philo)
 {
-	// printf("aaa%llu\n", get_time_now());
-	// printf("qqq%i\n", philo->right);
-	// printf("qqsssq%i\n", philo->left);
 	pthread_mutex_lock(&philo->forks[philo->right]);
-	// printf("bbb%llu\n", get_time_now());
 	print_msg(philo->args, philo, "has taken a fork");
 	pthread_mutex_lock(&philo->forks[philo->left]);
 	print_msg(philo->args, philo, "has taken a fork");
@@ -156,7 +152,6 @@ void process(t_philo *philo)
 	pthread_mutex_unlock(&philo->forks[philo->left]);
 	pthread_mutex_unlock(&philo->forks[philo->right]);
 	print_msg(philo->args, philo, "is sleeping");
-	// pthread_mutex_unlock(&philo->forks[philo->left]);
 	isleep(philo->args->tt_sleep / 1000);
 	print_msg(philo->args, philo, "is thinking");
 }
@@ -171,23 +166,6 @@ void *emulator(void *data)
 	while (1)
 	{
 		process(philo);
-		// pthread_mutex_lock(&philo->forks[philo->right]);
-		// print_msg(philo->args, philo, "has taken a fork");
-		// pthread_mutex_lock(&philo->forks[philo->left]);
-		// print_msg(philo->args, philo, "has taken a fork");
-		// print_msg(philo->args, philo, "is eating");
-		// isleep(philo->args->tt_eat / 1000);
-		// pthread_mutex_lock(&philo->args->mutex);
-		// philo->last_meal = get_time_now();
-		// // printf("last meal %lld\n", philo->last_meal);
-		// // printf("get_time %lld\n", get_time_now());
-		// pthread_mutex_unlock(&philo->args->mutex);
-		// pthread_mutex_unlock(&philo->forks[philo->right]);
-		// pthread_mutex_unlock(&philo->forks[philo->left]);
-		
-		// print_msg(philo->args, philo, "is sleeping");
-		// isleep(philo->args->tt_sleep / 1000);
-		// print_msg(philo->args, philo, "is thinking");
 	}
 }
 
@@ -227,9 +205,7 @@ int	main(int argc, char **argv)
 	// 	printf("last meal %llu tt_eat %llu\n", philo[i].last_meal, args->tt_eat);
 	// }
 	create_threads(args, philo);
-	checker(args, philo);
-	
-	
-	
+	if (checker(args, philo) == 1)
+		ft_free_destroy(args, philo);
 	return (0);
 }

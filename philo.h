@@ -16,13 +16,11 @@ struct s_philo
 	int					name;
 	int					left;
 	int					right;
-	// int					count_meals;
 	long long	last_meal;
 	int					meal_n;
 	pthread_t			t_id;
 	t_args 				*args;
 	t_mutex				*forks;
-	// int				flag_fork;
 };
 
 struct s_args
@@ -31,8 +29,7 @@ struct s_args
 	int					tt_die;
 	int					tt_eat;
 	int					tt_sleep;
-	int					meals; //argv[5]
-	// int count_fed_up ?
+	int					meals;
 	long long	start;
 	t_mutex				*forks;
 	t_mutex				print_lock;
@@ -54,6 +51,7 @@ int checker(t_args *args, t_philo *philo);
 int	ft_isdigit(char c);
 int	ft_atoi(const char *str);
 void	print_msg(t_args *args, t_philo *philo, char *msg);
+void ft_free_destroy(t_args *args, t_philo *philo);
 
 //philo.c
 int	init_mutex(t_args *args);

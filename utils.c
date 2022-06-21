@@ -6,7 +6,7 @@
 /*   By: slaree <slaree@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/01 17:42:02 by slaree            #+#    #+#             */
-/*   Updated: 2022/06/20 22:09:21 by slaree           ###   ########.fr       */
+/*   Updated: 2022/06/21 18:30:39 by slaree           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,4 +54,19 @@ void	print_msg(t_args *args, t_philo *philo, char *msg)
 	pthread_mutex_lock(&args->print_lock);
 	printf("%llu %d %s\n", get_time_now() - s_time, name, msg);
 	pthread_mutex_unlock(&args->print_lock);	
+}
+
+void ft_free_destroy(t_args *args, t_philo *philo)
+{
+	int i;
+
+	i = -1;
+	while (++i < args->all)
+		pthread_mutex_destroy(&args->forks[i]);
+	free(args->forks);
+	pthread_mutex_destroy(&args->print_lock);
+	pthread_mutex_destroy(&args->mutex);
+	pthread_mutex_destroy(&args->meal_checker);
+	free(args);
+	free(philo);
 }
