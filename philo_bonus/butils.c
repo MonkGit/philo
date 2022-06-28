@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   butils.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: slaree <slaree@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/01 17:42:02 by slaree            #+#    #+#             */
-/*   Updated: 2022/06/21 18:30:39 by slaree           ###   ########.fr       */
+/*   Created: 2022/06/28 21:14:06 by slaree            #+#    #+#             */
+/*   Updated: 2022/06/28 21:14:48 by slaree           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "bphilo.h"
 
 int	ft_isdigit(char c)
 {
@@ -18,7 +18,6 @@ int	ft_isdigit(char c)
 		return (0);
 	return (1);
 }
-
 
 int	ft_atoi(const char *str)
 {
@@ -44,29 +43,26 @@ int	ft_atoi(const char *str)
 	return (nb * sign);
 }
 
+int	err_msg(char *error_msg)
+{
+	if (!error_msg)
+		return (1);
+	while (*error_msg)
+	{
+		write(2, error_msg, 1);
+		error_msg++;
+	}
+	exit(EXIT_FAILURE);
+}
+
 void	print_msg(t_args *args, t_philo *philo, char *msg)
 {
-	int name;
-	unsigned long long s_time;
+	int			name;
+	long long	s_time;
 
 	name = philo->name;
 	s_time = args->start;
-	pthread_mutex_lock(&args->print_lock);
+	sem_wait(args->print_lock);
 	printf("%llu %d %s\n", get_time_now() - s_time, name, msg);
-	pthread_mutex_unlock(&args->print_lock);	
-}
-
-void ft_free_destroy(t_args *args, t_philo *philo)
-{
-	int i;
-
-	i = -1;
-	while (++i < args->all)
-		pthread_mutex_destroy(&args->forks[i]);
-	free(args->forks);
-	pthread_mutex_destroy(&args->print_lock);
-	pthread_mutex_destroy(&args->mutex);
-	pthread_mutex_destroy(&args->meal_checker);
-	free(args);
-	free(philo);
+	sem_post(args->print_lock);
 }
