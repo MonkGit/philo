@@ -25,7 +25,7 @@ Once awake, they start thinking again. The simulation stops when a philosopher d
 
 • No need to say that philosophers should avoid dying!
 
->> The Solution for the Dining Philosophers Problem <<
+>> The Solution for the Dining Philosophers Problem
 
 In the Mandatory part we are dealing with Philosophers as threads and forks represented by mutexes. 
 We need to avoid deadlocks.
