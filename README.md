@@ -33,12 +33,13 @@ We need to avoid deadlocks.
 In Bonus part Philosophers are processes and forks are semaphores.
 
 We launch the program with additional arguments:
-      * number_of_philosophers 
-      * time_to_die
-      * time_to_eat
-      * time_to_sleep
+        * number_of_philosophers 
+        * time_to_die
+        * time_to_eat
+        * time_to_sleep
       
 and one optional argument:
+      
       * number_of_times_each_philosopher_must_eat
       
      Example:  ./philo 4 410 200 200  
